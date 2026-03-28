@@ -399,8 +399,9 @@ function renderProps(){
           <span class="prop-value">${c.capacity>=9999?'Sin limite':c.capacity}</span></div></div>
       <div class="prop-group"><span class="prop-label">% del flujo de salida</span>
         <div class="prop-slider-row"><input type="range" class="prop-slider" min="0" max="100" step="1" value="${c.percent}"
-          oninput="updConnProp(${c.id},'percent',+this.value);this.nextElementSibling.textContent=this.value+'%'">
-          <span class="prop-value">${c.percent}%</span></div></div>
+          oninput="updConnProp(${c.id},'percent',+this.value);this.nextElementSibling.value=this.value">
+          <input type="number" class="prop-value-input" value="${c.percent}" min="0" max="100" step="1"
+            oninput="this.previousElementSibling.value=Math.min(this.value,100);updConnProp(${c.id},'percent',Math.min(+this.value,100))"></div></div>
       <div class="prop-section">Puertos</div>
       <div class="prop-group" style="display:flex;gap:6px;">
         <div style="flex:1;"><span class="prop-label">Origen</span>
@@ -491,31 +492,37 @@ function renderProps(){
     </div>
     <div class="prop-group"><span class="prop-label">Capacidad nominal</span>
       <div class="prop-slider-row"><input type="range" class="prop-slider" min="0" max="5000" step="10" value="${node.capacity}"
-        oninput="updProp(${node.id},'capacity',+this.value);this.nextElementSibling.textContent=this.value">
-        <span class="prop-value">${node.capacity}</span></div></div>
+        oninput="updProp(${node.id},'capacity',+this.value);this.nextElementSibling.value=this.value">
+        <input type="number" class="prop-value-input" value="${node.capacity}" min="0" step="10"
+          oninput="this.previousElementSibling.value=Math.min(this.value,5000);updProp(${node.id},'capacity',+this.value)"></div></div>
     <div class="prop-group"><span class="prop-label">Bultos/Uds. de entrada (0 = recibe de otros)</span>
       <div class="prop-slider-row"><input type="range" class="prop-slider" min="0" max="5000" step="10" value="${node.inputBultos}"
-        oninput="updProp(${node.id},'inputBultos',+this.value);this.nextElementSibling.textContent=this.value">
-        <span class="prop-value">${node.inputBultos}</span></div></div>
+        oninput="updProp(${node.id},'inputBultos',+this.value);this.nextElementSibling.value=this.value">
+        <input type="number" class="prop-value-input" value="${node.inputBultos}" min="0" step="10"
+          oninput="this.previousElementSibling.value=Math.min(this.value,5000);updProp(${node.id},'inputBultos',+this.value)"></div></div>
     <div class="prop-section">Rendimiento</div>
     <div class="prop-group"><span class="prop-label">OEE (%)</span>
       <div class="prop-slider-row"><input type="range" class="prop-slider" min="0" max="100" step="1" value="${node.oee}"
-        oninput="updProp(${node.id},'oee',+this.value);this.nextElementSibling.textContent=this.value+'%'"
+        oninput="updProp(${node.id},'oee',+this.value);this.nextElementSibling.value=this.value"
         style="background:linear-gradient(to right,var(--red),var(--yellow),var(--green));">
-        <span class="prop-value">${node.oee}%</span></div></div>
+        <input type="number" class="prop-value-input" value="${node.oee}" min="0" max="100" step="1"
+          oninput="this.previousElementSibling.value=Math.min(this.value,100);updProp(${node.id},'oee',Math.min(+this.value,100))"></div></div>
     <div class="prop-group"><span class="prop-label">Horas func./dia (0 = horario DC)</span>
       <div class="prop-slider-row"><input type="range" class="prop-slider" min="0" max="24" step=".5" value="${node.operatingHours}"
-        oninput="updProp(${node.id},'operatingHours',+this.value);this.nextElementSibling.textContent=this.value==0?'Auto':this.value+'h'">
-        <span class="prop-value">${node.operatingHours==0?'Auto':node.operatingHours+'h'}</span></div></div>
+        oninput="updProp(${node.id},'operatingHours',+this.value);this.nextElementSibling.value=this.value">
+        <input type="number" class="prop-value-input" value="${node.operatingHours}" min="0" max="24" step="0.5"
+          oninput="this.previousElementSibling.value=Math.min(this.value,24);updProp(${node.id},'operatingHours',Math.min(+this.value,24))"></div></div>
     <div class="prop-section">Personal</div>
     <div class="prop-group"><span class="prop-label">Personas dedicadas (0 = automatizado)</span>
       <div class="prop-slider-row"><input type="range" class="prop-slider" min="0" max="100" step="1" value="${node.personnel}"
-        oninput="updProp(${node.id},'personnel',+this.value);this.nextElementSibling.textContent=this.value==0?'Auto':this.value">
-        <span class="prop-value">${node.personnel==0?'Auto':node.personnel}</span></div></div>
+        oninput="updProp(${node.id},'personnel',+this.value);this.nextElementSibling.value=this.value">
+        <input type="number" class="prop-value-input" value="${node.personnel}" min="0" step="1"
+          oninput="this.previousElementSibling.value=Math.min(this.value,100);updProp(${node.id},'personnel',+this.value)"></div></div>
     <div class="prop-group" style="${node.personnel>0?'':'opacity:.35;pointer-events:none;'}"><span class="prop-label">Productividad/persona</span>
       <div class="prop-slider-row"><input type="range" class="prop-slider" min="0" max="500" step="5" value="${node.prodPerPerson}"
-        oninput="updProp(${node.id},'prodPerPerson',+this.value);this.nextElementSibling.textContent=this.value">
-        <span class="prop-value">${node.prodPerPerson}</span></div></div>
+        oninput="updProp(${node.id},'prodPerPerson',+this.value);this.nextElementSibling.value=this.value">
+        <input type="number" class="prop-value-input" value="${node.prodPerPerson}" min="0" step="5"
+          oninput="this.previousElementSibling.value=Math.min(this.value,500);updProp(${node.id},'prodPerPerson',+this.value)"></div></div>
     ${persSum}
     `:''}
     ${statusHTML}${connsHTML}
@@ -544,7 +551,7 @@ function openIconPicker(nodeId){
     cell.title=ICON_NAMES[key]||key;
     const cvs=document.createElement('canvas');cvs.width=28;cvs.height=28;cvs.style.cssText='width:28px;height:28px;';cell.appendChild(cvs);
     const ic=cvs.getContext('2d');fn(ic,0,0,28,t.color);
-    const nm=document.createElement('div');nm.style.cssText='font-size:8px;color:var(--text-dim);text-align:center;margin-top:2px;';nm.textContent=ICON_NAMES[key]||key;cell.appendChild(nm);
+    const nm=document.createElement('div');nm.className='icon-label';nm.textContent=ICON_NAMES[key]||key;cell.appendChild(nm);
     cell.onclick=()=>{node.icon=key;saveAll();renderProps();render();ovl.remove();};
     grid.appendChild(cell);});
 }

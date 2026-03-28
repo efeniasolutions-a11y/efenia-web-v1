@@ -46,6 +46,8 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 .prop-slider{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--border);outline:none;}
 .prop-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;}
 .prop-value{font-size:12px;font-weight:600;min-width:40px;text-align:right;}
+.prop-value-input{width:52px;padding:2px 5px;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:11px;font-weight:600;text-align:center;outline:none;flex-shrink:0;}
+.prop-value-input:focus{border-color:var(--accent);}
 .prop-section{font-size:9px;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent-light);margin:12px 0 6px;padding-top:10px;border-top:1px solid var(--border);}
 .status-badge{display:inline-block;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:600;}
 .status-badge.green{background:rgba(0,184,148,.2);color:var(--green);}
@@ -90,13 +92,14 @@ body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
 
 /* ICON PICKER */
 .icon-picker-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;display:flex;align-items:center;justify-content:center;}
-.icon-picker-box{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;width:320px;max-height:400px;}
+.icon-picker-box{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:16px;width:360px;max-height:460px;}
 .icon-picker-box h3{font-size:12px;margin-bottom:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;}
-.icon-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:4px;overflow-y:auto;max-height:300px;padding:4px;}
-.icon-cell{width:40px;height:40px;display:flex;align-items:center;justify-content:center;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all .15s;}
+.icon-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;overflow-y:auto;max-height:360px;padding:4px;}
+.icon-cell{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:6px 4px 4px;gap:3px;border-radius:8px;cursor:pointer;border:2px solid transparent;transition:all .15s;}
 .icon-cell:hover{background:rgba(108,92,231,.12);border-color:var(--accent);}
 .icon-cell.selected{background:rgba(108,92,231,.2);border-color:var(--accent);}
-.icon-cell canvas{width:28px;height:28px;}
+.icon-cell canvas{width:28px;height:28px;flex-shrink:0;}
+.icon-cell .icon-label{font-size:8px;color:var(--text-dim);text-align:center;word-break:break-word;line-height:1.2;}
 
 /* MOBILE */
 .mobile-toggle{display:none;width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);font-size:16px;cursor:pointer;align-items:center;justify-content:center;z-index:160;position:absolute;box-shadow:0 4px 12px rgba(0,0,0,.3);}
