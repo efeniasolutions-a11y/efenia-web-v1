@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EFENiA — Warehouse Simulator</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">EFENiA <span>Warehouse Simulator</span></div>
+  <div class="sep"></div>
+  <div class="topbar-actions">
+    <button class="btn hide-m" onclick="showHelp()">? Ayuda</button>
+    <button class="btn warn" onclick="openSchedule()">&#128197; Horario</button>
+    <button class="btn hide-m" onclick="exportJSON()">Exportar</button>
+    <button class="btn hide-m" onclick="importJSON()">Importar</button>
+    <button class="btn hide-s" onclick="clearAll()">Nuevo</button>
+    <div class="sep"></div>
+    <button class="btn" id="connectBtn" onclick="toggleConnectMode()">Conectar</button>
+    <button class="btn success" id="simBtn" onclick="toggleSimulation()">&#9654; Simular</button>
+  </div>
+</div>
+
+<div class="main">
+  <div class="toolbar" id="toolbarPanel">
+    <h3>Macros</h3>
+    <div class="tool-item" draggable="true" data-type="dc">
+      <div class="ti" style="background:rgba(116,185,255,.12);color:var(--blue);">&#127981;</div>
+      <div><div class="tn">Distribution Center</div><div class="td">Centro de distribucion</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="fc">
+      <div class="ti" style="background:rgba(162,155,254,.12);color:var(--accent-light);">&#127970;</div>
+      <div><div class="tn">Fulfillment Center</div><div class="td">Centro de fulfillment</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="custom_macro">
+      <div class="ti" style="background:rgba(255,255,255,.05);color:var(--text);">&#10010;</div>
+      <div><div class="tn">Macro Personalizada</div><div class="td">Agrupacion libre</div></div>
+    </div>
+
+    <h3>Areas</h3>
+    <div class="tool-item" draggable="true" data-type="entradas">
+      <div class="ti" style="background:rgba(116,185,255,.12);color:var(--blue);">&#128666;</div>
+      <div><div class="tn">Entradas</div><div class="td">Recepcion de mercancia</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="almacen_manual">
+      <div class="ti" style="background:rgba(162,155,254,.12);color:var(--accent-light);">&#128230;</div>
+      <div><div class="tn">Almacen Manual</div><div class="td">Almacenaje manual</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="sorter_area">
+      <div class="ti" style="background:rgba(225,112,85,.12);color:var(--red);">&#128256;</div>
+      <div><div class="tn">Sorter</div><div class="td">Zona de clasificacion</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="expediciones_area">
+      <div class="ti" style="background:rgba(0,184,148,.12);color:var(--green);">&#128230;</div>
+      <div><div class="tn">Expediciones</div><div class="td">Salida de pedidos</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="incidencias">
+      <div class="ti" style="background:rgba(253,203,110,.12);color:var(--yellow);">&#9888;</div>
+      <div><div class="tn">Incidencias</div><div class="td">Gestion de incidencias</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="online">
+      <div class="ti" style="background:rgba(116,185,255,.12);color:var(--blue);">&#127760;</div>
+      <div><div class="tn">Online</div><div class="td">Preparacion e-commerce</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="custom_area">
+      <div class="ti" style="background:rgba(255,255,255,.05);color:var(--text);">&#10010;</div>
+      <div><div class="tn">Area Personalizada</div><div class="td">Area libre</div></div>
+    </div>
+
+    <h3>Elementos</h3>
+    <div class="tool-item" draggable="true" data-type="dock">
+      <div class="ti" style="background:rgba(116,185,255,.12);color:var(--blue);">&#9650;</div>
+      <div><div class="tn">Muelle</div><div class="td">Muelle de carga</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="conveyor">
+      <div class="ti" style="background:rgba(136,136,160,.12);color:var(--text-dim);">&#10132;</div>
+      <div><div class="tn">Conveyor</div><div class="td">Cinta transportadora</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="sorter">
+      <div class="ti" style="background:rgba(225,112,85,.12);color:var(--red);">&#128256;</div>
+      <div><div class="tn">Sorter</div><div class="td">Clasificador</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="miniload">
+      <div class="ti" style="background:rgba(253,203,110,.12);color:var(--yellow);">&#9881;</div>
+      <div><div class="tn">MiniLoad</div><div class="td">Almacen automatico</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="packstation">
+      <div class="ti" style="background:rgba(0,184,148,.12);color:var(--green);">&#128230;</div>
+      <div><div class="tn">Pack Station</div><div class="td">Estacion de empaque</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="buffer">
+      <div class="ti" style="background:rgba(162,155,254,.12);color:var(--accent-light);">&#9638;</div>
+      <div><div class="tn">Buffer</div><div class="td">Zona de acumulacion</div></div>
+    </div>
+    <div class="tool-item" draggable="true" data-type="custom">
+      <div class="ti" style="background:rgba(255,255,255,.05);color:var(--text);">&#10010;</div>
+      <div><div class="tn">Personalizado</div><div class="td">Elemento libre</div></div>
+    </div>
+  </div>
+
+  <div class="canvas-area" id="canvasArea">
+    <canvas id="canvas"></canvas>
+    <div class="mode-ind" id="modeInd"></div>
+    <div class="ctx-menu" id="ctxMenu"></div>
+    <button class="mobile-toggle" id="toggleToolbar" onclick="toggleMobileToolbar()">&#9776;</button>
+    <button class="mobile-toggle" id="toggleProps" onclick="toggleMobileProps()">&#9881;</button>
+    <div class="mobile-add-bar" id="mobileAddBar"></div>
+  </div>
+  <div class="panel-backdrop" id="panelBackdrop" onclick="closeMobilePanels()"></div>
+
+  <div class="properties" id="propsPanel">
+    <div id="propsContent">
+      <div class="prop-title">Propiedades</div>
+      <p style="font-size:12px;color:var(--text-dim);margin-top:30px;text-align:center;line-height:1.6;">
+        Arrastra elementos al canvas.<br>Selecciona uno para configurarlo.
+      </p>
+    </div>
+  </div>
+</div>
+
+<div class="bottombar">
+  <span><span class="dot" style="background:var(--accent)"></span><span id="stE">0 elementos</span></span>
+  <span><span class="dot" style="background:var(--blue)"></span><span id="stC">0 conexiones</span></span>
+  <span><span class="dot" style="background:var(--red)"></span><span id="stB">0 cuellos de botella</span></span>
+  <span style="margin-left:auto;">Zoom: <span id="zoomLvl">100%</span></span>
+</div>
+
+<!-- SCHEDULE -->
+<div class="overlay" id="schedOvl" onclick="if(event.target===this)this.classList.remove('visible')">
+  <div class="overlay-box">
+    <h2>&#128197; Horario del Centro</h2>
+    <p class="sub">Configura turnos, horarios y personal por dia</p>
+    <div class="shift-times" id="shiftTimes"></div>
+    <table class="sched-table">
+      <thead><tr><th>Dia</th><th>Manana<br><span id="sL0" style="font-weight:400"></span></th><th>Tarde<br><span id="sL1" style="font-weight:400"></span></th><th>Noche<br><span id="sL2" style="font-weight:400"></span></th><th>Total</th><th>Horas</th></tr></thead>
+      <tbody id="schedBody"></tbody>
+    </table>
+    <div style="display:flex;gap:6px;margin-top:16px;justify-content:flex-end;">
+      <button class="btn" onclick="document.getElementById('schedOvl').classList.remove('visible')">Cerrar</button>
+      <button class="btn primary" onclick="saveAll();document.getElementById('schedOvl').classList.remove('visible')">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- HELP -->
+<div class="overlay" id="helpOvl" onclick="if(event.target===this)this.classList.remove('visible')">
+  <div class="overlay-box" style="max-width:520px;">
+    <h2>Como usar el simulador</h2>
+    <p style="font-size:12px;color:var(--text-dim);line-height:1.8;margin-bottom:6px;"><strong>Anadir:</strong> Arrastra desde la barra izquierda al canvas.</p>
+    <p style="font-size:12px;color:var(--text-dim);line-height:1.8;margin-bottom:6px;"><strong>Redimensionar:</strong> Arrastra las esquinas de cualquier elemento.</p>
+    <p style="font-size:12px;color:var(--text-dim);line-height:1.8;margin-bottom:6px;"><strong>Conectar:</strong> Boton Conectar o tecla <strong>C</strong>. Clic en un <strong>puerto</strong> (circulo en el borde) del origen, luego en un puerto del destino. Cada elemento tiene 4 puertos (arriba, derecha, abajo, izquierda).</p>
+    <p style="font-size:12px;color:var(--text-dim);line-height:1.8;margin-bottom:6px;"><strong>Editar conector:</strong> Clic sobre la linea de un conector para seleccionarlo. Configura su velocidad (u/h), nombre y porcentaje.</p>
+    <p style="font-size:12px;color:var(--text-dim);line-height:1.8;margin-bottom:6px;"><strong>Simular:</strong> Boton Simular para ver flujo animado. Los conectores con capacidad limitada tambien pueden ser cuellos de botella.</p>
+    <p style="font-size:12px;color:var(--text-dim);line-height:1.8;margin-bottom:6px;"><strong>Zoom:</strong> Rueda raton. <strong>Pan:</strong> Espacio + arrastrar.</p>
+    <p style="font-size:12px;color:var(--text-dim);line-height:1.8;margin-bottom:6px;"><strong>Eliminar:</strong> Seleccionar + Supr o clic derecho.</p>
+    <button class="btn primary" style="margin-top:12px;width:100%;justify-content:center;" onclick="document.getElementById('helpOvl').classList.remove('visible')">Entendido</button>
+  </div>
+</div>
+
+<script src="js/icons.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
