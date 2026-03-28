@@ -69,12 +69,11 @@ function resize(){
 window.addEventListener('resize',resize);
 
 // ── SELECTION HELPERS ──
-function selectNode(id) {
+function selectNode(id, openProps) {
   selectedIds = id!==null ? new Set([id]) : new Set();
   selectedConnId = null;
   renderProps(); render();
-  if(id!==null && window.innerWidth<=768){
-    document.getElementById('toolbarPanel').classList.remove('open');
+  if(id!==null && openProps && window.innerWidth<=768){
     document.getElementById('propsPanel').classList.add('open');
     document.getElementById('panelBackdrop').classList.add('visible');
   }
@@ -100,7 +99,7 @@ function addNode(type,x,y){
   const t=TYPES[type];if(!t)return null;
   const node={id:idCounter++,type,label:t.label,icon:t.icon,x,y,w:t.w,h:t.h,
     capacity:t.cap,oee:85,operatingHours:0,personnel:0,prodPerPerson:0,
-    unitType:'uds', inputBultos:0,inputFlow:0,outputFlow:0,effectiveCap:t.cap,status:'idle'};
+    unitType:'cajas', inputBultos:0,inputFlow:0,outputFlow:0,effectiveCap:t.cap,status:'idle'};
   nodes.push(node);selectNode(node.id);saveAll();updateStats();return node;
 }
 function removeNode(id){
@@ -266,7 +265,7 @@ function drawNode(node){
 
   // Capacity / unit line
   ctx.fillStyle='#8888a0';ctx.font='10px Inter,sans-serif';
-  const uLabel=node.unitType==='bultos'?'bultos/h':'uds/h';
+  const uLabel=node.unitType==='cajas'?'cajas/h':'uds/h';
   if(node.capacity>0){
     if(simulating)ctx.fillText(node.effectiveCap+' '+uLabel+' eff.',lblX,lblY+16);
     else{let cl=node.capacity+' '+uLabel;if(node.oee<100)cl+=' (OEE '+node.oee+'%)';ctx.fillText(cl,lblX,lblY+16);}
@@ -427,7 +426,7 @@ function renderProps(){
   let statusHTML='';
   if(simulating&&node.capacity>0){
     const sat=node.effectiveCap>0?Math.round(node.inputFlow/node.effectiveCap*100):0;
-    const uL=node.unitType==='bultos'?'bultos/h':'uds/h';
+    const uL=node.unitType==='cajas'?'cajas/h':'uds/h';
     statusHTML=`<div class="prop-section">Simulacion</div>
       <div class="prop-group"><span class="prop-label">Estado</span>
         <span class="status-badge ${node.status}">${node.status==='red'?'CUELLO DE BOTELLA':node.status==='yellow'?'CERCA DEL LIMITE':node.status==='green'?'OK':'SIN FLUJO'}</span></div>
@@ -467,26 +466,15 @@ function renderProps(){
     <div class="prop-title">${t.cat.toUpperCase()} — ${node.type}</div>
     <div class="prop-group"><span class="prop-label">Nombre</span>
       <input type="text" class="prop-input" value="${node.label}" onchange="updProp(${node.id},'label',this.value)"></div>
-    <div class="prop-group"><span class="prop-label">Icono</span>
-      <button class="btn" style="width:100%;justify-content:center;gap:8px;" onclick="openIconPicker(${node.id})">
-        <canvas id="iconPreview" width="22" height="22" style="width:22px;height:22px;"></canvas>
-        Cambiar icono</button></div>
-    <div class="prop-section">Dimensiones</div>
-    <div class="prop-group" style="display:flex;gap:6px;">
-      <div style="flex:1;"><span class="prop-label">Ancho</span>
-        <input type="number" class="prop-input" value="${node.w}" min="60" step="10" onchange="updProp(${node.id},'w',+this.value)"></div>
-      <div style="flex:1;"><span class="prop-label">Alto</span>
-        <input type="number" class="prop-input" value="${node.h}" min="40" step="10" onchange="updProp(${node.id},'h',+this.value)"></div>
-    </div>
     ${node.capacity>0||t.cat!=='macro'?`
     <div class="prop-section">Capacidad</div>
     <div class="prop-group"><span class="prop-label">Unidades de medida</span>
       <div style="display:flex;gap:14px;margin-top:4px;">
         <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;">
-          <input type="radio" name="ut_${node.id}" value="uds" ${node.unitType!=='bultos'?'checked':''} onchange="updProp(${node.id},'unitType','uds')"> uds/h
+          <input type="radio" name="ut_${node.id}" value="cajas" ${node.unitType==='cajas'?'checked':''} onchange="updProp(${node.id},'unitType','cajas')"> cajas/h
         </label>
         <label style="display:flex;align-items:center;gap:5px;font-size:12px;cursor:pointer;">
-          <input type="radio" name="ut_${node.id}" value="bultos" ${node.unitType==='bultos'?'checked':''} onchange="updProp(${node.id},'unitType','bultos')"> bultos/h
+          <input type="radio" name="ut_${node.id}" value="uds" ${node.unitType==='uds'?'checked':''} onchange="updProp(${node.id},'unitType','uds')"> uds/h
         </label>
       </div>
     </div>
@@ -526,6 +514,17 @@ function renderProps(){
     ${persSum}
     `:''}
     ${statusHTML}${connsHTML}
+    <div class="prop-section">Apariencia</div>
+    <div class="prop-group"><span class="prop-label">Icono</span>
+      <button class="btn" style="width:100%;justify-content:center;gap:8px;" onclick="openIconPicker(${node.id})">
+        <canvas id="iconPreview" width="22" height="22" style="width:22px;height:22px;"></canvas>
+        Cambiar icono</button></div>
+    <div class="prop-group" style="display:flex;gap:6px;">
+      <div style="flex:1;"><span class="prop-label">Ancho</span>
+        <input type="number" class="prop-input" value="${node.w}" min="60" step="10" onchange="updProp(${node.id},'w',+this.value)"></div>
+      <div style="flex:1;"><span class="prop-label">Alto</span>
+        <input type="number" class="prop-input" value="${node.h}" min="40" step="10" onchange="updProp(${node.id},'h',+this.value)"></div>
+    </div>
     <div style="margin-top:16px;"><button class="btn danger" style="width:100%;justify-content:center;" onclick="removeNode(${node.id});render();">Eliminar</button></div>`;
 
   setTimeout(()=>{const prev=document.getElementById('iconPreview');if(prev){const pc=prev.getContext('2d');pc.clearRect(0,0,22,22);const fn=ICONS[iconKey];if(fn)fn(pc,0,0,22,t.color);}},0);
@@ -599,7 +598,7 @@ canvas.addEventListener('mousedown',e=>{
       if(selectedIds.has(node.id))selectedIds.delete(node.id);else selectedIds.add(node.id);
       selectedConnId=null;renderProps();render();
     } else {
-      if(!selectedIds.has(node.id)){selectedIds=new Set([node.id]);selectedConnId=null;renderProps();}
+      if(!selectedIds.has(node.id)){selectedIds=new Set([node.id]);selectedConnId=null;renderProps();render();}
       // Start drag for all selected
       dragging={type:'nodes',startWx:wp.x,startWy:wp.y,
         initPos:Object.fromEntries([...selectedIds].map(id=>{const n=nodes.find(nn=>nn.id===id);return[id,n?{x:n.x,y:n.y}:{x:0,y:0}];}))};
@@ -654,6 +653,14 @@ canvas.addEventListener('mouseup',()=>{
     }
   }
   dragging=null;canvas.style.cursor='';render();
+});
+
+canvas.addEventListener('dblclick',e=>{
+  const rect=canvas.getBoundingClientRect(),wp=s2w(e.clientX-rect.left,e.clientY-rect.top);
+  const node=nodeAtPos(wp.x,wp.y);
+  if(node){selectNode(node.id,true);
+    if(window.innerWidth>768){document.getElementById('propsPanel').scrollTop=0;}}
+  else{const cc=connAtPos(wp.x,wp.y);if(cc)selectConn(cc.id);}
 });
 
 canvas.addEventListener('wheel',e=>{e.preventDefault();const rect=canvas.getBoundingClientRect(),sx=e.clientX-rect.left,sy=e.clientY-rect.top;
@@ -713,14 +720,8 @@ canvas.addEventListener('touchmove',e=>{e.preventDefault();
 },{passive:false});
 canvas.addEventListener('touchend',()=>{if(dragging&&dragging.type==='nodes')saveAll();dragging=null;});
 
-// Drag from toolbar
-document.querySelectorAll('.tool-item').forEach(item=>{
-  item.addEventListener('dragstart',e=>{e.dataTransfer.setData('nodeType',item.dataset.type);e.dataTransfer.effectAllowed='copy';});});
+// Keep canvas area ref for drop support
 const canvasArea=document.getElementById('canvasArea');
-canvasArea.addEventListener('dragover',e=>{e.preventDefault();e.dataTransfer.dropEffect='copy';});
-canvasArea.addEventListener('drop',e=>{e.preventDefault();const type=e.dataTransfer.getData('nodeType');
-  if(!type||!TYPES[type])return;const rect=canvas.getBoundingClientRect();const wp=s2w(e.clientX-rect.left,e.clientY-rect.top);
-  addNode(type,Math.round((wp.x-TYPES[type].w/2)/10)*10,Math.round((wp.y-TYPES[type].h/2)/10)*10);render();});
 
 // Context menu
 function showCtx(x,y,node,conn){
@@ -815,18 +816,135 @@ function updateStats(){
 function showHelp(){document.getElementById('helpOvl').classList.add('visible');}
 
 // ── MOBILE ──
-function toggleMobileToolbar(){const tb=document.getElementById('toolbarPanel'),pr=document.getElementById('propsPanel'),bd=document.getElementById('panelBackdrop');
-  pr.classList.remove('open');const o=tb.classList.toggle('open');bd.classList.toggle('visible',o);}
-function toggleMobileProps(){const tb=document.getElementById('toolbarPanel'),pr=document.getElementById('propsPanel'),bd=document.getElementById('panelBackdrop');
-  tb.classList.remove('open');const o=pr.classList.toggle('open');bd.classList.toggle('visible',o);}
-function closeMobilePanels(){document.getElementById('toolbarPanel').classList.remove('open');document.getElementById('propsPanel').classList.remove('open');document.getElementById('panelBackdrop').classList.remove('visible');}
-function addNodeCenter(type){const a=document.getElementById('canvasArea'),wp=s2w(a.clientWidth/2,a.clientHeight/2);
-  addNode(type,Math.round((wp.x+(Math.random()-.5)*80)/10)*10,Math.round((wp.y+(Math.random()-.5)*80)/10)*10);render();}
+function toggleMobileToolbar(){openAddElement();}
+function toggleMobileProps(){const pr=document.getElementById('propsPanel'),bd=document.getElementById('panelBackdrop');
+  const o=pr.classList.toggle('open');bd.classList.toggle('visible',o);}
+function closeMobilePanels(){document.getElementById('propsPanel').classList.remove('open');document.getElementById('panelBackdrop').classList.remove('visible');}
+function addNodeCenter(type,opts){const a=document.getElementById('canvasArea'),wp=s2w(a.clientWidth/2,a.clientHeight/2);
+  const n=addNode(type,Math.round((wp.x+(Math.random()-.5)*80)/10)*10,Math.round((wp.y+(Math.random()-.5)*80)/10)*10);
+  if(n&&opts){if(opts.label)n.label=opts.label;if(opts.icon)n.icon=opts.icon;if(opts.capacity!==undefined)n.capacity=opts.capacity;if(opts.unitType)n.unitType=opts.unitType;saveAll();}
+  render();return n;}
+
+// ── ADD ELEMENT MODAL ──
+const ADD_EL_TYPES = [
+  {type:'inbound',   label:'Inbound',      desc:'Recepcion de mercancia',  cap:1000},
+  {type:'allocation',label:'Allocation',   desc:'Ubicacion en almacen',    cap:500},
+  {type:'storage',   label:'Storage',      desc:'Almacenamiento',          cap:2000},
+  {type:'picking',   label:'Picking',      desc:'Preparacion de pedidos',  cap:800},
+  {type:'packing',   label:'Packing',      desc:'Empaquetado',             cap:600},
+  {type:'shipping',  label:'Shipping',     desc:'Salida de pedidos',       cap:1000},
+  {type:'dock',      label:'Muelle',       desc:'Muelle de carga',         cap:500},
+  {type:'conveyor',  label:'Conveyor',     desc:'Cinta transportadora',    cap:2000},
+  {type:'sorter',    label:'Sorter',       desc:'Clasificador automatico', cap:800},
+  {type:'miniload',  label:'MiniLoad',     desc:'Almacen automatico',      cap:300},
+  {type:'packstation',label:'Pack Station',desc:'Estacion de empaque',     cap:400},
+  {type:'buffer',    label:'Buffer',       desc:'Zona de acumulacion',     cap:1500},
+  {type:'agv',       label:'AGV',          desc:'Vehiculo autonomo',       cap:600},
+  {type:'custom',    label:'Personalizado',desc:'Elemento libre',          cap:500},
+];
+
+function openAddElement(){
+  const ovl=document.createElement('div');ovl.className='add-el-overlay';
+  ovl.onclick=e=>{if(e.target===ovl)ovl.remove();};
+  const box=document.createElement('div');box.className='add-el-box';
+  ovl.appendChild(box);document.body.appendChild(ovl);
+  renderAddElList(box,'');
+}
+
+function renderAddElList(box,filter){
+  const filtered=ADD_EL_TYPES.filter(t=>!filter||t.label.toLowerCase().includes(filter)||t.desc.toLowerCase().includes(filter));
+  box.innerHTML=`<h2>Anadir Elemento</h2>
+    <input class="add-el-search" placeholder="Buscar elemento..." value="${filter}" autofocus>
+    <div class="add-el-list" id="addElList"></div>`;
+  const search=box.querySelector('.add-el-search');
+  search.addEventListener('input',()=>renderAddElList(box,search.value.toLowerCase()));
+  setTimeout(()=>search.focus(),50);
+  const list=box.querySelector('#addElList');
+  filtered.forEach(item=>{
+    const row=document.createElement('div');row.className='add-el-item';
+    const t=TYPES[item.type];
+    const cvs=document.createElement('canvas');cvs.width=28;cvs.height=28;cvs.style.cssText='width:28px;height:28px;';
+    row.appendChild(cvs);
+    const fn=ICONS[t.icon];if(fn)fn(cvs.getContext('2d'),0,0,28,t.color);
+    row.innerHTML+=`<div><div class="ae-name">${item.label}</div><div class="ae-desc">${item.desc}</div></div><div class="ae-cap">${item.cap} cajas/h</div>`;
+    row.prepend(cvs);
+    row.onclick=()=>renderAddElConfig(box,item);
+    list.appendChild(row);
+  });
+}
+
+function renderAddElConfig(box,item){
+  const t=TYPES[item.type];
+  let chosenIcon=t.icon, chosenName=item.label, chosenCap=item.cap, chosenUnit='cajas';
+  const allIcons=[...new Set([...ICON_CATALOG.element,...ICON_CATALOG.area,...ICON_CATALOG.macro])];
+
+  function drawConfig(){
+    box.innerHTML=`<div class="add-el-config">
+      <div class="ae-back" id="aeBack">&larr; Volver</div>
+      <h2 style="margin:0;">Configurar elemento</h2>
+      <div class="ae-icon-row">
+        <div class="ae-icon-preview" id="aeIconPrev" title="Cambiar icono"><canvas width="36" height="36" style="width:36px;height:36px;"></canvas></div>
+        <div class="ae-fields" style="flex:1;">
+          <div><span class="prop-label">Nombre</span>
+            <input type="text" class="prop-input" id="aeName" value="${chosenName}"></div>
+        </div>
+      </div>
+      <div class="ae-field-row">
+        <div><span class="prop-label">Capacidad</span>
+          <input type="number" class="prop-input" id="aeCap" value="${chosenCap}" min="0" step="10"></div>
+        <div><span class="prop-label">Unidad</span>
+          <div class="ae-unit-toggle">
+            <button id="aeUnitCajas" class="${chosenUnit==='cajas'?'active':''}">cajas/h</button>
+            <button id="aeUnitUds" class="${chosenUnit==='uds'?'active':''}">uds/h</button>
+          </div>
+        </div>
+      </div>
+      <button class="btn primary" id="aeCreate" style="width:100%;justify-content:center;padding:10px;font-size:13px;margin-top:4px;">Crear elemento</button>
+    </div>`;
+    // Draw icon preview
+    const pcvs=box.querySelector('#aeIconPrev canvas');
+    const pc=pcvs.getContext('2d');pc.clearRect(0,0,36,36);
+    const fn=ICONS[chosenIcon];if(fn)fn(pc,0,0,36,t.color);
+    // Events
+    box.querySelector('#aeBack').onclick=()=>renderAddElList(box,'');
+    box.querySelector('#aeName').oninput=e=>{chosenName=e.target.value;};
+    box.querySelector('#aeCap').oninput=e=>{chosenCap=+e.target.value;};
+    box.querySelector('#aeUnitCajas').onclick=()=>{chosenUnit='cajas';drawConfig();};
+    box.querySelector('#aeUnitUds').onclick=()=>{chosenUnit='uds';drawConfig();};
+    box.querySelector('#aeIconPrev').onclick=()=>{
+      renderIconChooser(box,allIcons,t.color,chosenIcon,picked=>{chosenIcon=picked;drawConfig();});
+    };
+    box.querySelector('#aeCreate').onclick=()=>{
+      const unitType=chosenUnit==='cajas'?'cajas':'uds';
+      const n=addNodeCenter(item.type,{label:chosenName,icon:chosenIcon,capacity:chosenCap,unitType});
+      box.closest('.add-el-overlay').remove();
+    };
+  }
+  drawConfig();
+}
+
+function renderIconChooser(box,iconKeys,color,current,onPick){
+  box.innerHTML=`<div class="add-el-config">
+    <div class="ae-back" id="aeIconBack">&larr; Volver</div>
+    <h2 style="margin:0;">Elegir icono</h2>
+    <div class="icon-grid" id="aeIconGrid" style="margin-top:10px;"></div>
+  </div>`;
+  box.querySelector('#aeIconBack').onclick=()=>onPick(current);
+  const grid=box.querySelector('#aeIconGrid');
+  iconKeys.forEach(key=>{const fn=ICONS[key];if(!fn)return;
+    const cell=document.createElement('div');cell.className='icon-cell'+(current===key?' selected':'');
+    const cvs=document.createElement('canvas');cvs.width=28;cvs.height=28;cvs.style.cssText='width:28px;height:28px;';cell.appendChild(cvs);
+    fn(cvs.getContext('2d'),0,0,28,color);
+    const nm=document.createElement('div');nm.className='icon-label';nm.textContent=ICON_NAMES[key]||key;cell.appendChild(nm);
+    cell.onclick=()=>onPick(key);
+    grid.appendChild(cell);
+  });
+}
+
+// Mobile add bar — single button
 (function(){const bar=document.getElementById('mobileAddBar');
-  const items=[['inbound','\u{1F69A}','Inbound'],['allocation','\u{1F69B}','Allocation'],['storage','\u{1F4E6}','Storage'],
-    ['picking','\u{1F91A}','Picking'],['packing','\u{1F4E6}','Packing'],['shipping','\u{1F4E4}','Shipping'],
-    ['dock','\u25B2','Muelle'],['conveyor','\u27A4','Conveyor'],['custom','\u271A','Custom']];
-  bar.innerHTML=items.map(([t,ic,lb])=>`<div class="mai" onclick="addNodeCenter('${t}')"><span>${ic}</span>${lb}</div>`).join('');})();
+  bar.innerHTML='<div class="mai" onclick="openAddElement()" style="flex:1;min-width:auto;"><span>+</span>Anadir Elemento</div>';
+})();
 
 // ── INIT ──
 loadAll();resize();render();

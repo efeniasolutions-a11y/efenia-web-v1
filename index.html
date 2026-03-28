@@ -25,90 +25,14 @@
 
 <div class="main">
   <div class="toolbar" id="toolbarPanel">
-    <h3>Macros</h3>
-    <div class="tool-item" draggable="true" data-type="dc">
-      <div class="ti" style="background:rgba(116,185,255,.12);color:var(--blue);">&#127981;</div>
-      <div><div class="tn">Distribution Center</div><div class="td">Centro de distribucion</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="fc">
-      <div class="ti" style="background:rgba(162,155,254,.12);color:var(--accent-light);">&#127970;</div>
-      <div><div class="tn">Fulfillment Center</div><div class="td">Centro de fulfillment</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="custom_macro">
-      <div class="ti" style="background:rgba(255,255,255,.05);color:var(--text);">&#10010;</div>
-      <div><div class="tn">Macro Personalizada</div><div class="td">Agrupacion libre</div></div>
-    </div>
-
-    <h3>Operaciones</h3>
-    <div class="tool-item" draggable="true" data-type="inbound">
-      <div class="ti" style="background:rgba(116,185,255,.12);color:var(--blue);">&#128666;</div>
-      <div><div class="tn">Inbound</div><div class="td">Recepcion de mercancia</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="allocation">
-      <div class="ti" style="background:rgba(162,155,254,.12);color:var(--accent-light);">&#128341;</div>
-      <div><div class="tn">Allocation</div><div class="td">Ubicacion en almacen</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="storage">
-      <div class="ti" style="background:rgba(253,203,110,.12);color:var(--yellow);">&#127970;</div>
-      <div><div class="tn">Storage</div><div class="td">Capacidad estatica</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="picking">
-      <div class="ti" style="background:rgba(0,184,148,.12);color:var(--green);">&#9989;</div>
-      <div><div class="tn">Picking</div><div class="td">Preparacion de pedidos</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="packing">
-      <div class="ti" style="background:rgba(225,112,85,.12);color:var(--red);">&#128230;</div>
-      <div><div class="tn">Packing</div><div class="td">Empaquetado</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="shipping">
-      <div class="ti" style="background:rgba(116,185,255,.12);color:var(--blue);">&#128666;</div>
-      <div><div class="tn">Shipping</div><div class="td">Salida de pedidos</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="custom_area">
-      <div class="ti" style="background:rgba(255,255,255,.05);color:var(--text);">&#10010;</div>
-      <div><div class="tn">Area Personalizada</div><div class="td">Area libre</div></div>
-    </div>
-
-    <h3>Elementos</h3>
-    <div class="tool-item" draggable="true" data-type="dock">
-      <div class="ti" style="background:rgba(116,185,255,.12);color:var(--blue);">&#9650;</div>
-      <div><div class="tn">Muelle</div><div class="td">Muelle de carga</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="conveyor">
-      <div class="ti" style="background:rgba(136,136,160,.12);color:var(--text-dim);">&#10132;</div>
-      <div><div class="tn">Conveyor</div><div class="td">Cinta transportadora</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="sorter">
-      <div class="ti" style="background:rgba(225,112,85,.12);color:var(--red);">&#128256;</div>
-      <div><div class="tn">Sorter</div><div class="td">Clasificador</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="miniload">
-      <div class="ti" style="background:rgba(253,203,110,.12);color:var(--yellow);">&#9881;</div>
-      <div><div class="tn">MiniLoad</div><div class="td">Almacen automatico</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="packstation">
-      <div class="ti" style="background:rgba(0,184,148,.12);color:var(--green);">&#128230;</div>
-      <div><div class="tn">Pack Station</div><div class="td">Estacion de empaque</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="buffer">
-      <div class="ti" style="background:rgba(162,155,254,.12);color:var(--accent-light);">&#9638;</div>
-      <div><div class="tn">Buffer</div><div class="td">Zona de acumulacion</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="agv">
-      <div class="ti" style="background:rgba(116,185,255,.12);color:var(--blue);">&#129302;</div>
-      <div><div class="tn">AGV</div><div class="td">Vehiculo autonomo</div></div>
-    </div>
-    <div class="tool-item" draggable="true" data-type="custom">
-      <div class="ti" style="background:rgba(255,255,255,.05);color:var(--text);">&#10010;</div>
-      <div><div class="tn">Personalizado</div><div class="td">Elemento libre</div></div>
-    </div>
+    <button class="btn primary add-element-btn" onclick="openAddElement()" title="Anadir Elemento">+</button>
   </div>
 
   <div class="canvas-area" id="canvasArea">
     <canvas id="canvas"></canvas>
     <div class="mode-ind" id="modeInd"></div>
     <div class="ctx-menu" id="ctxMenu"></div>
-    <button class="mobile-toggle" id="toggleToolbar" onclick="toggleMobileToolbar()">&#9776;</button>
+    <button class="mobile-toggle" id="toggleToolbar" onclick="openAddElement()" style="font-size:20px;font-weight:700;">+</button>
     <button class="mobile-toggle" id="toggleProps" onclick="toggleMobileProps()">&#9881;</button>
     <div class="mobile-add-bar" id="mobileAddBar"></div>
   </div>
